@@ -15,54 +15,71 @@
 #include "chebyshev_moments.hpp"
 #include "linear_algebra.hpp"
 #include <omp.h>
-#include <cassert>
 #include <chrono>
 #include "quantum_states.hpp"
 #include "kpm_noneqop.hpp" //Get Batch function
+#include "special_functions.hpp"
 
 namespace chebyshev
 {
-	typedef std::complex<double> value_t;	
-	typedef std::vector<value_t> vector_t ;
+  typedef std::complex<double> value_t;	
+  typedef std::vector<value_t> vector_t ;
+  
+  namespace sequential
+  {
+    
+    int DensityExpansionMoments(vector_t& PhiL,vector_t& PhiR,
+				SparseMatrixType &HAM,
+				SparseMatrixType &OP,
+				chebyshev::Moments1D &chebMoms);
+    
+    int CorrelationExpansionMoments(const vector_t& PhiL, const vector_t& PhiR,
+				    SparseMatrixType &HAM,
+				    SparseMatrixType &OPL,
+				    SparseMatrixType &OPR,
+				    chebyshev::Moments2D &chebMoms);
+    
+    int ComputeMomTable(chebyshev::Vectors &chebVL,  chebyshev::Vectors& chebVR, vector_t& output);
 
-	namespace sequential
-	{
+    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
+				   const double DeltaT,
+				   SparseMatrixType &HAM,
+				   const double Omega0);
 
-		int DensityExpansionMoments(vector_t& PhiL,vector_t& PhiR,
-									 SparseMatrixType &HAM,
-									 SparseMatrixType &OP,
-									 chebyshev::Moments1D &chebMoms);
+    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
+				   SparseMatrixType &HAM,
+				   const double Omega0);
+    
+    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
+				   const double DeltaT,
+				   SparseMatrixType &HAM);
 
-		int CorrelationExpansionMoments(const vector_t& PhiL, const vector_t& PhiR,
-										SparseMatrixType &HAM,
-										SparseMatrixType &OPL,
-										SparseMatrixType &OPR,
-										chebyshev::Moments2D &chebMoms);
-
-		int ComputeMomTable( chebyshev::Vectors &chebVL,  chebyshev::Vectors& chebVR ,  vector_t& output);
-
-	};
-
-
-	namespace parallel
-	{
-		int CorrelationExpansionMoments( 	const int batchSize,
-											const vector_t& PhiR, const vector_t& PhiL,
-											SparseMatrixType &HAM,
-											SparseMatrixType &OPL,
-											SparseMatrixType &OPR,  
-											chebyshev::Vectors &chevVecL,
-											chebyshev::Vectors &chevVecR,
-											chebyshev::Moments2D &chebMoms
-										);
-																					
-		int ComputeMomTable( chebyshev::Vectors &chebVL, chebyshev::Vectors & chebVR ,  vector_t& output);
-
-	};
-
-	int CorrelationExpansionMoments(int numStates, SparseMatrixType &HAM, SparseMatrixType &OPL, SparseMatrixType &OPR,  chebyshev::Moments2D &chebMoms, StateType type);
+    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
+				   SparseMatrixType &HAM);
 
 
+  };
+
+
+  namespace parallel
+  {
+    int CorrelationExpansionMoments(const int batchSize,
+				    const vector_t& PhiR, const vector_t& PhiL,
+				    SparseMatrixType &HAM,
+				    SparseMatrixType &OPL,
+				    SparseMatrixType &OPR,  
+				    chebyshev::Vectors &chevVecL,
+				    chebyshev::Vectors &chevVecR,
+				    chebyshev::Moments2D &chebMoms
+				    );
+    
+    int ComputeMomTable(chebyshev::Vectors &chebVL, chebyshev::Vectors & chebVR ,  vector_t& output);
+    
+  };
+  
+  int CorrelationExpansionMoments(int numStates, SparseMatrixType &HAM, SparseMatrixType &OPL, SparseMatrixType &OPR,  chebyshev::Moments2D &chebMoms, StateType type);
+
+  
 }; // namespace chebyshev
 
 #endif

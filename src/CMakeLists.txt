@@ -10,6 +10,7 @@ set(KPM_LIB_SOURCES
  "chebyshev_moments2D.cpp"
  "chebyshev_moments1D.cpp"
  "sparse_matrix.cpp"
+ "special_functions.cpp"
 )
 
 #IF INTEL BACKEND IS USED
@@ -37,7 +38,7 @@ set(MAIN inline_kuboBastinFromChebmom)
 add_executable(${MAIN} kuboBastinFromChebmom.cpp )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
-set(MAIN inline_inline_kuboGreenwoodFromChebmom)
+set(MAIN inline_kuboGreenwoodFromChebmom)
 add_executable(${MAIN} kuboGreenwoodFromChebmom.cpp)
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
