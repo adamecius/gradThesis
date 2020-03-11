@@ -37,20 +37,25 @@ int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
 					   const double Omega0)
 {
   const int DIM = HAM.numRows();
+  double
+    Jm = besselJ(0, Omega0*DeltaT),
+    Jm1 = besselJ(1, Omega0*DeltaT);
 
   vector_t J0(DIM), J1(DIM);
 
   linalg::copy(PhiIN, J0);
   HAM.Multiply(J0, J1);
-  linalg::axpy(besselJ(0, Omega0*DeltaT), J0, PhiOUT);
-  linalg::axpy(2 * std::complex<double>(0, -1) * besselJ(1, Omega0*DeltaT), J1, PhiOUT);
+  linalg::axpy(Jm, J0, PhiOUT);
+  linalg::axpy(2 * std::complex<double>(0, -1) * Jm1, J1, PhiOUT);
 
   int m=2;
-  while(std::abs(besselJ(m, Omega0*DeltaT)) > 10e-15) {
+  Jm = besselJ(m, Omega0*DeltaT); Jm1 = besselJ(m+1, Omega0*DeltaT);
+  while((std::abs(Jm) + std::abs(Jm1)) / 2.0 > 1e-15) {
     HAM.Multiply(2.0, J1, -1.0, J0);
-    linalg::axpy(2 * std::pow(std::complex<double>(0, -1), m) * besselJ(m, Omega0*DeltaT), J0, PhiOUT);
+    linalg::axpy(2 * std::pow(std::complex<double>(0, -1), m) * Jm, J0, PhiOUT);
     J0.swap(J1);
     m++;
+    Jm = Jm1; Jm1 = besselJ(m+1, Omega0*DeltaT);
   }
 
   return 0;
