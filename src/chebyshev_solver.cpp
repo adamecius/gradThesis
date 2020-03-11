@@ -31,7 +31,7 @@ int sequential::DensityExpansionMoments(vector_t& PhiL,vector_t& PhiR,
 };
 
 
-int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
+/*int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
 					   const double DeltaT,
 					   SparseMatrixType &HAM,
 					   const double Omega0)
@@ -59,31 +59,7 @@ int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
   }
 
   return 0;
-};
-
-int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-					   const double DeltaT,
-					   SparseMatrixType &HAM)
-{
-  sequential::EvolutionOperatorExpansion(PhiIN, PhiOUT, DeltaT, HAM, 1.0);
-  return 0;
-};
-
-int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-					   SparseMatrixType &HAM,
-					   const double Omega0)
-{
-  sequential::EvolutionOperatorExpansion(PhiIN, PhiOUT, 10.0, HAM, Omega0);
-  return 0;
-};
-
-int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-					   SparseMatrixType &HAM)
-{
-  sequential::EvolutionOperatorExpansion(PhiIN, PhiOUT, 10.0, HAM, 1.0);
-  return 0;
-};
-
+  };*/
 
 int sequential::ComputeMomTable(chebyshev::Vectors &chebVL, chebyshev::Vectors& chebVR, vector_t& output)
 {

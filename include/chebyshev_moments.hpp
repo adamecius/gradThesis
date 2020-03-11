@@ -1,3 +1,4 @@
+// With contributions made by Angel D. Prieto S.
 #ifndef CHEBYSHEV_MOMENTS
 #define CHEBYSHEV_MOMENTS
 

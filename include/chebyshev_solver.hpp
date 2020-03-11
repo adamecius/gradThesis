@@ -1,4 +1,3 @@
-// With contributions made by Angel D. Prieto S.
 #ifndef CHEBYSHEV_SOLVER
 #define CHEBYSHEV_SOLVER
 
@@ -42,23 +41,10 @@ namespace chebyshev
     
     int ComputeMomTable(chebyshev::Vectors &chebVL,  chebyshev::Vectors& chebVR, vector_t& output);
 
-    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
+    /*    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
 				   const double DeltaT,
 				   SparseMatrixType &HAM,
-				   const double Omega0);
-
-    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-				   SparseMatrixType &HAM,
-				   const double Omega0);
-    
-    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-				   const double DeltaT,
-				   SparseMatrixType &HAM);
-
-    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-				   SparseMatrixType &HAM);
-
-
+				   const double Omega0);*/
   };
 
 
