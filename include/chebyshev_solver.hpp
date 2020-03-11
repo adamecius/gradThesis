@@ -41,10 +41,6 @@ namespace chebyshev
     
     int ComputeMomTable(chebyshev::Vectors &chebVL,  chebyshev::Vectors& chebVR, vector_t& output);
 
-    /*    int EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
-				   const double DeltaT,
-				   SparseMatrixType &HAM,
-				   const double Omega0);*/
   };
 
 
