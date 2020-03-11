@@ -43,7 +43,15 @@ int sequential::EvolutionOperatorExpansion(vector_t& PhiIN, vector_t& PhiOUT,
   linalg::copy(PhiIN, J0);
   HAM.Multiply(J0, J1);
   linalg::axpy(besselJ(0, Omega0*DeltaT), J0, PhiOUT);
-  linalg::axpy(besselJ(1, Omega0*deltaT), J1, PhiOUT);
+  linalg::axpy(2 * std::complex<double>(0, -1) * besselJ(1, Omega0*DeltaT), J1, PhiOUT);
+
+  int m=2;
+  while(std::abs(besselJ(m, Omega0*DeltaT)) > 10e-15) {
+    HAM.Multiply(2.0, J1, -1.0, J0);
+    linalg::axpy(2 * std::pow(std::complex<double>(0, -1), m) * besselJ(m, Omega0*DeltaT), J0, PhiOUT);
+    J0.swap(J1);
+    m++;
+  }
 
   return 0;
 };
