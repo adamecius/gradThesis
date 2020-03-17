@@ -15,6 +15,7 @@
 #include "linear_algebra.hpp"
 #include "vector_list.hpp"
 #include "special_functions.hpp"
+#include "chebyshev_coefficients.hpp"
 
 namespace chebyshev 
 {
