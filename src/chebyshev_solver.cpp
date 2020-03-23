@@ -5,7 +5,6 @@
 using namespace chebyshev;
 
 
-
 int sequential::DensityExpansionMoments(vector_t& PhiL,vector_t& PhiR,
 					SparseMatrixType &HAM,
 					SparseMatrixType &OP,
@@ -199,9 +198,9 @@ int chebyshev::CorrelationExpansionMoments(int numStates, SparseMatrixType &HAM,
 	  }
       //SELECT RUNNING TYPE
       if( use_sequential )
-	chebyshev::sequential::CorrelationExpansionMoments(	Phi,Phi, HAM, OPL, OPR, chebMoms);
+	chebyshev::sequential::CorrelationExpansionMoments(Phi, Phi, HAM, OPL, OPR, chebMoms);
       else
-	chebyshev::parallel::CorrelationExpansionMoments(batchSize, Phi,Phi, HAM, OPL, OPR, chevVecL,chevVecR, chebMoms);
+	chebyshev::parallel::CorrelationExpansionMoments(batchSize, Phi, Phi, HAM, OPL, OPR, chevVecL, chevVecR, chebMoms);
     }
   
   //Fix the scaling of the moments
@@ -218,6 +217,67 @@ int chebyshev::CorrelationExpansionMoments(int numStates, SparseMatrixType &HAM,
 	chebMoms(mL,mR)= tmp;
 	chebMoms(mR,mL)= std::conj(tmp);
       }
+  
+  return 0;
+};
+
+
+int parallel::TempDensityExpansionMoments(const int batchSize,
+					  const double Omega0,
+					  const vector_t& Phi,
+					  SparseMatrixType &HAM,
+					  SparseMatrixType &OP,
+					  chebyshev::Vectors &chebVecR, chebyshev::Vectors &chebVecL,
+					  chebyshev::MomentsTD &chebMoms)
+{
+  assert(chebVecR.HighestMomentNumber() == chebVecL.HighestMomentNumber());
+  const size_t DIM = HAM.rank();
+  const size_t NumMoms = chebVecR.HighestMomentNumber();
+  const size_t momvecSize = (size_t)( (long unsigned int)batchSize );
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Initialize sparse for moment matrix" << std::endl;
+  chebyshev::Moments::vector_t momvec( momvecSize );
+
+  for (int m = 0; m < NumMoms; m+=batchSize)
+    {
+      chebVecR.SetInitVectors(HAM, Phi);
+      chebVecR.IterateAll(HAM);
+      chebVecR.Multiply(OP);
+
+      chebVecL.SetInitVectors(HAM, Phi);
+      for (int n = 0; n < ntimes; n++)
+	{
+	  chebVecL.EvolveAll(HAM, chebMoms.TimeStep(), Omega0);
+	  parallel::ComputeTDMomTable(chebVecL, chebVecR, momvec);
+	  linalg::axpy(momvec.size(), 1.0, &momvec[0], &chebMoms(m, n));
+	}
+    }
+  auto finish = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = finish - start;
+  std::cout << "Calculation of the moments in parallel solver took: "
+	    << elapsed.count() << " seconds. " << std::endl;
+
+  return 0;
+};
+
+
+int parallel::ComputeTDMomTable(chebyshev::Vectors &chebVL, chebyshev::Vectors& chebVR, vector_t& output)
+{
+  const auto dim   = chebVL.SystemSize();
+  const auto maxM = chebVL.HighestMomentNumber();
+  assert( chebVL.SystemSize() == chebVR.SystemSize() && chebVL.HighestMomentNumber() == chebVR.HighestMomentNumber() );
+  assert( output.size() == maxM );
+  const int nthreads = mkl_get_max_threads();
+  
+  mkl_set_num_threads_local(1);
+#pragma omp parallel for default(none) shared(chebVL,chebVR,output)
+  for( auto m = 0; m < maxML; m++)
+    {
+	output[m] = linalg::vdot( chebVL.Vector(m) , chebVR.Vector(m));	
+    }
+  mkl_set_num_threads_local(nthreads);
   
   return 0;
 };

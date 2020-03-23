@@ -90,42 +90,6 @@ int chebyshev::Vectors::EvolveAll( SparseMatrixType &NHAM, const double DeltaT, 
   return 0;
 };
 
-int chebyshev::Vectors::DeltaAll(SparseMatrixType &NHAM, const double Energy)
-{
-  const auto dim = NHAM.rank();
-  const auto numMom = this->HighestMomentNumber();
-  
-  if( this->ChebV0.size()!= dim )
-    this->ChebV0 = Moments::vector_t(dim, Moments::value_t(0)); 
-  
-  if( this->ChebV1.size()!= dim )
-    this->ChebV1 = Moments::vector_t(dim,Moments::value_t(0));
-
-  const double piOverMplusOne = M_PI / (double)(numMom + 1.0);
-  double g_J_m;
-
-  for( size_t m=0; m < numMom; m++)
-    {
-      int n = 0;
-      g_J_m = ((numMom - n + 1) * cos(piOverMplusOne * n)
-	       + sin(piOverMplusOne * n) * cos(piOverMplusOne) / sin(piOverMplusOne)) * piOverMplusOne / M_PI;
-      auto& myVec = this->Vector(m);
-      linalg::copy(myVec, ChebV0);
-      linalg::scal(0, myVec);
-      linalg::axpy(delta_chebF(Energy, n) * g_J_m, ChebV0, myVec);
-
-      NHAM.Multiply(ChebV0, ChebV1);
-      for(n = 1; n < numMom; m++)
-	{
-	  g_J_m = ((numMom - n + 1) * cos(piOverMplusOne * n)
-		   + sin(piOverMplusOne * n) * cos(piOverMplusOne) / sin(piOverMplusOne)) * piOverMplusOne / M_PI;
-	  linalg::axpy(2.0 * delta_chebF(Energy, n), ChebV1, myVec);
-	  NHAM.Multiply(2.0, ChebV1, -1.0, ChebV0);
-	  ChebV0.swap(ChebV1);
-	}
-    }
-  return 0;
-};
 
 int chebyshev::Vectors::Multiply( SparseMatrixType &OP )
 {
