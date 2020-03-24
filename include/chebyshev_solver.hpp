@@ -71,6 +71,7 @@ namespace chebyshev
   
   int CorrelationExpansionMoments(int numStates, SparseMatrixType &HAM, SparseMatrixType &OPL, SparseMatrixType &OPR,  chebyshev::Moments2D &chebMoms, StateType type);
 
+  int TempDensityExpansionMoments(int numStates, SparseMatrixType &HAM, SparseMatrixType &OP, SparseMatrixType &PROJ,  chebyshev::MomentsTD &chebMoms, StateType type )
   
 }; // namespace chebyshev
 
